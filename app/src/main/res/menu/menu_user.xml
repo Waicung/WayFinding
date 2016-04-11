@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <item android:id="@+id/new_user"
+        android:icon="@drawable/ic_new_user"
+        android:title="@string/menu_user"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/dbmanager"
+        android:title="DBManager"
+        android:icon="@drawable/ic_db_manager"
+        app:showAsAction="ifRoom"/>
+
+</menu>
