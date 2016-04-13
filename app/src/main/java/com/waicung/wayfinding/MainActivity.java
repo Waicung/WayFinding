@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity {
     DBOpenHelper mydb = new DBOpenHelper(this);
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

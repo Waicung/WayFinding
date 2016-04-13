@@ -5,8 +5,10 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:id="@+id/tv_step" />
+        android:id="@+id/tv_step"
+        android:gravity="center_vertical"
+        />
 </LinearLayout>

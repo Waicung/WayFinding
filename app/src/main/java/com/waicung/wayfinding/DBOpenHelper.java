@@ -33,7 +33,6 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                     USER_PASSWORD + " TEXT NOT NULL," + PRIMARY_USER + " INTEGER);";
 
     DBOpenHelper(Context context) {
-
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -88,8 +87,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
     }
 
-
     //Update a user as the main user or should be regards as normal user
+    //key 0 as normal user, 1 as primary user
     public boolean asPrimary(String user_name,int key){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "Update " + USER_TABLE_NAME +

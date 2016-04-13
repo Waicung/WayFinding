@@ -10,21 +10,27 @@ import java.net.URLConnection;
 /**
  * Created by waicung on 03/04/2016.
  * A helper for receiving response from Google Direction API
- * not an active activity
+ * The constructor take two coordinates as parameter to form a query
+ * The only method: getJSONStr will return the response from Google Direction API
  */
 public class DirectionHelper {
     private String GOOGLE_API_KEY = "AIzaSyAZEyaeSOnH8dcVq646GIyUQbxGKHza_dc";
-    private String d_origin = "-37.799538,144.958053";
-    private String d_destination = "-37.799901,144.943267";
     public String origin = "";
     public String destination = "";
     private final String MODE = "walking";
     String parameter = "";
     URL url;
 
+    public static void main(String arg[]){
+        DirectionHelper DH = new DirectionHelper();
+        String output = DH.getJSONStr();
+        System.out.print(output);
+    }
 
-/*    DirectionHelper(){
-        new DirectionHelper(d_origin,d_destination);
+
+    DirectionHelper(){
+        origin = "-37.799538,144.958053";
+        destination = "-37.799901,144.943267";
     }
 
     DirectionHelper(String origin,String destination){
@@ -37,11 +43,9 @@ public class DirectionHelper {
             url = new URL("https://maps.googleapis.com/maps/api/directions/json?"+parameter);}
         catch (MalformedURLException e){}
 
-    }*/
+    }
 
     public String getJSONStr(){
-        this.origin = d_origin;
-        this.destination = d_destination;
         try{
             //url = new URL("http://www.google.com/");}
             parameter = "origin="+origin+"&destination="+destination+"&mode="+MODE+"&key="+GOOGLE_API_KEY;

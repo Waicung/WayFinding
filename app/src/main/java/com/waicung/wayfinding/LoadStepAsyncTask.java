@@ -10,13 +10,13 @@ import java.util.ArrayList;
 
 /**
  * Created by waicung on 03/04/2016.
- * getting direction steps though Google direction API
- * Result as a list(ArrayList) of instructions
+ * JSON from Google direction API as input
+ * Result as a list(ArrayList) of direction instructions
  */
 public class LoadStepAsyncTask extends AsyncTask{
     @Override
     protected ArrayList<String> doInBackground(Object[] params) {
-        com.waicung.wayfinding.DirectionHelper DH = new com.waicung.wayfinding.DirectionHelper();
+        DirectionHelper DH = new DirectionHelper("-37.799538,144.958053","-37.799901,144.943267");
         ArrayList<String> instructions = new ArrayList<>();
         String Str = DH.getJSONStr();
 
@@ -28,13 +28,19 @@ public class LoadStepAsyncTask extends AsyncTask{
                 JSONArray legs = sub_routes.getJSONArray("legs");
                 JSONObject sub_legs = legs.getJSONObject(0);
                 JSONArray steps = sub_legs.getJSONArray("steps");
-                for(int i=1; i<steps.length();i++){
+                for(int i=0; i<steps.length();i++){
                     JSONObject step = steps.getJSONObject(i);
-                    //Log.v("Instruction",line);
-                    //line = Html.fromHtml(line).toString();
-                    //line.replaceAll("\\<.*?\\>", "");
-                    //Log.v("XInstruction",line);
-                    instructions.add(step.getString("html_instructions").replaceAll("\\<.*?\\>", ""));
+                    //Add html_instructions to a List without html tags
+                    if(i==steps.length()-1){
+                        String string = step.getString("html_instructions").replaceAll("\\<.*?\\>", "");
+                        int destination = string.indexOf("Destination");
+                        String sub1 = string.substring(0,destination);
+                        String sub2 = string.substring(destination,string.length());
+                        instructions.add(sub1);
+                        instructions.add(sub2);
+                    }
+                    else{
+                    instructions.add(step.getString("html_instructions").replaceAll("\\<.*?\\>", ""));}
                 }
             }
             catch(JSONException e){}

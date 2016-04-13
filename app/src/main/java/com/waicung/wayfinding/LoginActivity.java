@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 //check if successful
-                if(result==""){status.setText("Wrong user name or password");}
+                if(result=="false"){status.setText("Wrong user name or password");}
                 else{
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     LoginActivity.this.startActivity(intent);
