@@ -28,7 +28,7 @@
         android:textSize="20dp" />
 
     <ListView
-        android:id="@+id/instructions"
+        android:id="@+id/steps_listView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="70dp">

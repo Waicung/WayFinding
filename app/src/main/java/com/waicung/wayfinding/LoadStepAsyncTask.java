@@ -31,8 +31,9 @@ public class LoadStepAsyncTask extends AsyncTask{
                 for(int i=0; i<steps.length();i++){
                     JSONObject step = steps.getJSONObject(i);
                     //Add html_instructions to a List without html tags
+                    String string = step.getString("html_instructions").replaceAll("\\<.*?\\>", "");
+                    //last instruction contain 'destination information', which needs to be split
                     if(i==steps.length()-1){
-                        String string = step.getString("html_instructions").replaceAll("\\<.*?\\>", "");
                         int destination = string.indexOf("Destination");
                         String sub1 = string.substring(0,destination);
                         String sub2 = string.substring(destination,string.length());
@@ -40,7 +41,7 @@ public class LoadStepAsyncTask extends AsyncTask{
                         instructions.add(sub2);
                     }
                     else{
-                    instructions.add(step.getString("html_instructions").replaceAll("\\<.*?\\>", ""));}
+                    instructions.add(string);}
                 }
             }
             catch(JSONException e){}

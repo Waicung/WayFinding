@@ -14,6 +14,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
 /* Authentication through remote php server
 * By comparing the input with the record in remote database
 * Update local database with the result of the authentication
@@ -83,8 +85,14 @@ public class SigninAsyncTask extends AsyncTask<String,Void,String>{
     @Override
     protected void onPostExecute(String result){
         if (auth) {
+            Toast toast = Toast.makeText(this.context,"login successfully",Toast.LENGTH_SHORT);
+            toast.show();
             this.statusField.setText("Login Successful");
             this.statusField.setVisibility(View.VISIBLE);
+        }
+        else {
+            Toast toast = Toast.makeText(this.context,"login failed",Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 }

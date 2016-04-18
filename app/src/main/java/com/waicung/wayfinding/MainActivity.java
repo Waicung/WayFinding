@@ -16,28 +16,39 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Main activity of Wayfinding
+ * Main feature:
+ * - Route instruction display (ListView)
+ * - Login support(In Action Bar)
+ * - Start Experiment and Finish Experiment button
+ * - Interact with user(instruction achieved and get lose)
+ */
 public class MainActivity extends AppCompatActivity {
     DBOpenHelper mydb = new DBOpenHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Set the main activity layout
         setContentView(R.layout.activity_main);
-        //Setting toolbar and its layout
+        //Set toolbar(Action Bar) and its layout
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-        //setting ListView to display direction steps.
-        ListView lv = (ListView)findViewById(R.id.instructions);
-        displaySteps(lv);
+        //Set ListView for direction steps display.
+        ListView steps_listView = (ListView)findViewById(R.id.steps_listView);
+        displaySteps(steps_listView);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //Set menu item for login
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_user, menu);
         //Check if a user exist and set actionbar icon accordingly
@@ -95,10 +106,23 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> steps;
         try{
             steps = (ArrayList<String>) new LoadStepAsyncTask().execute().get();
-        ArrayAdapter adapter = new ArrayAdapter<String>(MainActivity.this,R.layout.list_item,R.id.tv_step,steps);
-        lv.setAdapter(adapter);}
+            new SaveRouteAsyncTask().execute(getApplicationContext(),"testfile.txt",steps.toString());
+        }
         catch (InterruptedException e){}
         catch (ExecutionException e){}
+
+        try {
+            String instructions = (String) new readRouteAsyncTask().execute(this,"testfile.txt").get();
+            ArrayList ins_array = new ArrayList();
+            ins_array.add(instructions);
+            ArrayAdapter adapter = new ArrayAdapter<String>(MainActivity.this,R.layout.list_item,R.id.tv_step,ins_array);
+            lv.setAdapter(adapter);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
     }
 
     //for opening the database manager for debugging
