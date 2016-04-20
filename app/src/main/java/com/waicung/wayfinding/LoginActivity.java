@@ -38,14 +38,15 @@ public class LoginActivity extends AppCompatActivity {
                 String password = et_password.getText().toString();
                 //log in
                 try {
-                    result = new SigninAsyncTask(LoginActivity.this, status).execute(username, password).get();
-                } catch (InterruptedException e) {
+                    result = new SigninAsyncTask(LoginActivity.this).execute(username, password).get();
+
+                }catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
                 //check if successful
-                if(result=="false"){status.setText("Wrong user name or password");}
+                if(result == "Success"){}
                 else{
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     LoginActivity.this.startActivity(intent);

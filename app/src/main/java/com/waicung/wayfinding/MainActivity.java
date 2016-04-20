@@ -2,6 +2,7 @@ package com.waicung.wayfinding;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.support.v7.app.AppCompatActivity;
@@ -30,7 +31,7 @@ import java.util.concurrent.ExecutionException;
  * - Interact with user(instruction achieved and get lose)
  */
 public class MainActivity extends AppCompatActivity {
-    DBOpenHelper mydb = new DBOpenHelper(this);
+    //DBOpenHelper mydb = new DBOpenHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,15 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
         //Set ListView for direction steps display.
         ListView steps_listView = (ListView)findViewById(R.id.steps_listView);
-        displaySteps(steps_listView);
+/*        if(checkUser()){
+            //if user exist, get steps from remote database
+            //TODO retrieveSteps(steps_listView);
+        }
+        else{
+            //retrieve direction from Google API
+            //TODO retrieveDirectionFromGG();
+        }*/
+        //displaySteps(steps_listView);
     }
 
 
@@ -53,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_user, menu);
         //Check if a user exist and set actionbar icon accordingly
         MenuItem userIcon = menu.findItem(R.id.new_user);
-        if(checkUser()){userIcon.setIcon(R.drawable.ic_user);}
+        if(checkUser()){
+            userIcon.setIcon(R.drawable.ic_user);
+        }
         return true;
     }
 
@@ -90,7 +101,17 @@ public class MainActivity extends AppCompatActivity {
 
     //To check if the a primary user exist
     private boolean checkUser(){
-        Cursor cursor;
+        //check if there is a user name in sharedPreference file
+        SharedPreferences sharePref = getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
+        int user_id = sharePref.getInt("user_id", 0);
+        if(user_id != 0){
+            return true;
+        }
+        else {
+            return false;
+        }
+        //TODO old method to be deleted
+/*        Cursor cursor;
         cursor = mydb.getDataBy("primary_user", "1");
         if(cursor.getCount()<=0){
                 cursor.close();
@@ -98,8 +119,9 @@ public class MainActivity extends AppCompatActivity {
 
         else{
             return true;
-        }
+        }*/
     }
+
 
     //retrieving Google direction API response and display it on ListView
     private void displaySteps(ListView lv) {

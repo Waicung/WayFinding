@@ -20,7 +20,6 @@ public class Step {
     }
 
     public String toString(){
-        String instructions = instruction;
         return instruction;
     }
 

@@ -4,27 +4,27 @@ package com.waicung.wayfinding;
  * Created by waicung on 14/04/2016.
  */
 public class Point {
-    private Float longitude;
-    private Float latitude;
+    private Double lng;
+    private Double lat;
 
-    public Point(Float lon, Float lat){
-        this.longitude = lon;
-        this.latitude = lat;
+    public Point(Double lon, Double lat){
+        this.lng = lon;
+        this.lat = lat;
     }
 
     public Point(String lon, String lat){
-        this.longitude = Float.parseFloat(lon);
-        this.latitude = Float.parseFloat(lat);
+        this.lng = Double.parseDouble(lon);
+        this.lat = Double.parseDouble(lat);
     }
 
     public String toString(){
-        String location = longitude.toString() + latitude.toString();
+        String location = lng.toString() + "," + lat.toString();
         return location;
     }
 
     public Point clone(){
-        Float new_lon = this.longitude;
-        Float new_lat = this.latitude;
+        Double new_lon = this.lng;
+        Double new_lat = this.lat;
         return new Point(new_lon,new_lat);
     }
 }

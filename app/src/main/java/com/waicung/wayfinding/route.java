@@ -12,11 +12,15 @@ import java.util.List;
 public class Route {
     private Point start_point;
     private Point end_point;
+    private int distance;
+    private int duration;
     private ArrayList<Step> steps= new ArrayList<Step>();
 
-    public Route(Point start_point, Point end_point, ArrayList<Step> steps){
+    public Route(Point start_point, Point end_point, int duration, int distance, ArrayList<Step> steps){
         this.start_point = start_point;
         this.end_point = end_point;
+        this.distance = distance;
+        this.duration = duration;
         for(Step s: steps){
             this.steps.add(s.clone());
         }

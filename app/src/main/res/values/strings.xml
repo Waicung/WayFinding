@@ -7,6 +7,7 @@
     <string name="login_button">Login</string>
     <string name="login_cancle">Cancle</string>
     <string name="logout">Log Out</string>
+    <string name="preference_file_key">UserInfo</string>
 
 
 </resources>

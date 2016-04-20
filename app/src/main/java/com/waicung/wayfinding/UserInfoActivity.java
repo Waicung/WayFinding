@@ -1,6 +1,8 @@
 package com.waicung.wayfinding;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,8 +14,6 @@ import android.widget.TextView;
 public class UserInfoActivity extends AppCompatActivity {
     Button logout_btn;
     TextView tv_user_name;
-    DBOpenHelper db = new DBOpenHelper(this);
-    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +36,17 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void showInfo() {
-        Cursor cursor = db.getDataBy(db.PRIMARY_USER,"1");
-        cursor.moveToFirst();
-        //get the data by column name
-        name = cursor.getString(cursor.getColumnIndex(db.USER_ID));
-        //set to display
-        tv_user_name.setText(name);
+        SharedPreferences sharePref = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        String username = sharePref.getString("username", null);
+        if (username != null){
+            tv_user_name.setText(username);
+        }
     }
 
     private void logout() {
-        db.asPrimary(name, 0);
+        SharedPreferences.Editor editor = getSharedPreferences("UserInfo", Context.MODE_PRIVATE).edit();
+        editor.clear();
+        editor.commit();
 
     }
 }
