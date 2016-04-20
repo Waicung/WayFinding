@@ -46,8 +46,7 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 //check if successful
-                if(result == "Success"){}
-                else{
+                if(result == "Success"){
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     LoginActivity.this.startActivity(intent);
                 }

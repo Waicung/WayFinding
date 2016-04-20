@@ -103,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkUser(){
         //check if there is a user name in sharedPreference file
         SharedPreferences sharePref = getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
-        int user_id = sharePref.getInt("user_id", 0);
-        if(user_id != 0){
+        String user_id = sharePref.getString("user_id", "0");
+        if(user_id != "0"){
             return true;
         }
         else {

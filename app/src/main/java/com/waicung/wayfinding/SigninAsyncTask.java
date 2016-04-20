@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-
 /* Authentication through remote php server
 * By comparing the input with the record in remote database
 * Update local database with the result of the authentication
@@ -23,8 +22,10 @@ public class SigninAsyncTask extends AsyncTask<String,Void,String>{
     @Override
     protected String doInBackground(String... params) {
         //check if success
+        System.out.println("username: " + params[0]+" password: " + params[1]);
         AuthenHelper AH = new AuthenHelper(params[0],params[1]);
         AuthenNResponse response = AH.authentication();
+        System.out.print(response);
         String result;
         if(response!=null&&response.getSuccess()){
             //store user_id, route_id, start and end point
@@ -43,6 +44,8 @@ public class SigninAsyncTask extends AsyncTask<String,Void,String>{
         }
         //do nothing
         return result;
+
+
     }
 
     @Override
