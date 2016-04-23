@@ -1,11 +1,10 @@
 package com.waicung.wayfinding;
 
-import android.widget.ListView;
-
 import java.util.List;
 
 /**
  * Created by waicung on 20/04/2016.
+ * Remote authentication response
  */
 public class AuthenNResponse {
     private boolean success;

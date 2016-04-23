@@ -11,6 +11,11 @@ import android.widget.TextView;
 
 import java.util.concurrent.ExecutionException;
 
+/**
+ * The Activity for user login
+ * Back to  MainActivity if success
+ */
+
 public class LoginActivity extends AppCompatActivity {
     Button login_btn, cancel_btn;
     EditText et_user, et_password;

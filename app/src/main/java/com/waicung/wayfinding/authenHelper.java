@@ -19,13 +19,15 @@ import java.util.List;
 
 /**
  * Created by waicung on 19/04/2016.
- * An authentication class for retrieving credential info from service
+ * A Http request class for accessing server side authentication API
  * When revoke with correct credential
- * server return route_id, start_point, and end_point information for further activity
+ * server return information such as assignment route_id, start_point, and end_point
  */
 
 public class AuthenHelper {
+    //remote authentication API
     private URL url;
+    //user credential as parameter for HTTP post request
     private String username, password;
 
     AuthenHelper(String username, String password){
@@ -34,29 +36,28 @@ public class AuthenHelper {
 
     }
 
+    //TODO testing main method
     public static void main(String arg[]){
         AuthenHelper AH = new AuthenHelper("","");
-        AuthenNResponse response = AH.authentication();
+        AuthenNResponse response = AH.getAuthenNResponse();
         String message = response.getMessage();
         System.out.println("Response message: " + message);
         System.out.println("Success: " + response.getSuccess());
-        /*System.out.print("User_id: " + response.getUser_id());
-        System.out.print("Route_id: " + response.getRoute_id());
-        List<Point> points = response.getPoints();
-        for(Point p: points){
-            System.out.println(p.toString());
-        }*/
-
     }
 
-    public AuthenNResponse authentication(){
+    //Actual method for the http request
+    public AuthenNResponse getAuthenNResponse(){
         StringBuilder Str = new StringBuilder();
         System.out.println("user" + username);
         try {
-            //TODO parameter to be added
-            url = new URL("http://192.168.1.8:8080/wayfinding/authenticationAPI.php");
+            //TODO insert correct API url
+            //for use of android emulator
+             url = new URL("http://10.0.2.2:8080/wayfinding/authenticationAPI.php");
+            //for use of local host
+            //url = new URL("http://localhost:8080/wayfinding/authenticationAPI.php");
         } catch (MalformedURLException e){}
         try{
+            //original way of encoding
             /*String postData = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8");
             postData += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");*/
             String postData = "username=" + URLEncoder.encode(username, "UTF-8") +
@@ -68,7 +69,7 @@ public class AuthenHelper {
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
-            //set post data(change into byte data)
+            //set post data(change it to byte data)
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write(postData);
             wr.flush();
@@ -80,7 +81,7 @@ public class AuthenHelper {
             //read response as string
             while(line!=null){
                 System.out.println("stream line: " + line);
-                Str.append(line);
+                Str.append(line + '\n');
                 line=reader.readLine();
             }
         }
@@ -91,39 +92,6 @@ public class AuthenHelper {
         Gson gson = new Gson();
         AuthenNResponse response = gson.fromJson(Str.toString(), AuthenNResponse.class);
         return response;
-    }
-
-    private String readInputStreamToString(HttpURLConnection connection) {
-        String result = null;
-        StringBuffer sb = new StringBuffer();
-        InputStream is = null;
-        String TAG = "WayFinding";
-
-        try {
-            is = new BufferedInputStream(connection.getInputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String inputLine = "";
-            while ((inputLine = br.readLine()) != null) {
-                sb.append(inputLine);
-            }
-            result = sb.toString();
-        }
-        catch (Exception e) {
-            Log.i(TAG, "Error reading InputStream");
-            result = null;
-        }
-        finally {
-            if (is != null) {
-                try {
-                    is.close();
-                }
-                catch (IOException e) {
-                    Log.i(TAG, "Error closing InputStream");
-                }
-            }
-        }
-
-        return result;
     }
 
 

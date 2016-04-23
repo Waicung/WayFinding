@@ -31,7 +31,6 @@ import java.util.concurrent.ExecutionException;
  * - Interact with user(instruction achieved and get lose)
  */
 public class MainActivity extends AppCompatActivity {
-    //DBOpenHelper mydb = new DBOpenHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +42,18 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
         //Set ListView for direction steps display.
         ListView steps_listView = (ListView)findViewById(R.id.steps_listView);
-/*        if(checkUser()){
+        if(checkUser()){
             //if user exist, get steps from remote database
             //TODO retrieveSteps(steps_listView);
+            Point start_point = new Point(-37.790950,144.927464);
+            Point end_point = new Point(-37.7909247,144.9228723);
+            new LoadStepAsyncTask(this).execute(start_point,end_point);
+            //displaySteps(steps_listView);
         }
         else{
             //retrieve direction from Google API
             //TODO retrieveDirectionFromGG();
-        }*/
+        }
         //displaySteps(steps_listView);
     }
 
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkUser(){
         //check if there is a user name in sharedPreference file
         SharedPreferences sharePref = getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
-        String user_id = sharePref.getString("user_id", "0");
+        String user_id = sharePref.getString(getString(R.string.preference_authenN_response), null);
         if(user_id != "0"){
             return true;
         }
@@ -127,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
     private void displaySteps(ListView lv) {
         ArrayList<String> steps;
         try{
-            steps = (ArrayList<String>) new LoadStepAsyncTask().execute().get();
+            steps = (ArrayList<String>) new LoadStepAsyncTask(this).execute().get();
             new SaveRouteAsyncTask().execute(getApplicationContext(),"testfile.txt",steps.toString());
         }
         catch (InterruptedException e){}

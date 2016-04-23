@@ -5,9 +5,10 @@
     <string name="login_user">User</string>
     <string name="login_password">Password</string>
     <string name="login_button">Login</string>
-    <string name="login_cancle">Cancle</string>
+    <string name="login_cancel">Cancel</string>
     <string name="logout">Log Out</string>
     <string name="preference_file_key">UserInfo</string>
+    <string name="preference_authenN_response">authentication_response</string>
 
 
 </resources>

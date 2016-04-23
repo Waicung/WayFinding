@@ -59,7 +59,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/login_cancle"
+        android:text="@string/login_cancel"
         android:id="@+id/button_cancel"
         android:layout_marginRight="49dp"
         android:layout_marginEnd="49dp"
