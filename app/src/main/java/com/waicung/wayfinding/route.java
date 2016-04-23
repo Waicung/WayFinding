@@ -16,6 +16,9 @@ public class Route {
     private int duration;
     private ArrayList<Step> steps= new ArrayList<Step>();
 
+    public  Route (){
+    }
+
     public Route(Point start_point, Point end_point, int duration, int distance, ArrayList<Step> steps){
         this.start_point = start_point;
         this.end_point = end_point;
@@ -51,6 +54,10 @@ public class Route {
             instructions.add(s.toString());
         }
         return instructions;
+    }
+
+    public void setSteps(List<Step> steps){
+        this.steps = (ArrayList<Step>) steps;
     }
 
     //Provided two route have the same start and end point

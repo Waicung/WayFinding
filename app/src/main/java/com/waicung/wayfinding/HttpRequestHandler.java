@@ -1,5 +1,7 @@
 package com.waicung.wayfinding;
 
+import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +25,7 @@ public class HttpRequestHandler {
 
     public static void main(String args[]){
         //test get request
-        String GOOGLE_API_KEY = "AIzaSyAZEyaeSOnH8dcVq646GIyUQbxGKHza_dc";
+        /*String GOOGLE_API_KEY = "AIzaSyAZEyaeSOnH8dcVq646GIyUQbxGKHza_dc";
         String MODE = "walking";
         String origin = "-37.790950,144.927464";
         String destination = "-37.7909247,144.9228723";
@@ -31,7 +33,7 @@ public class HttpRequestHandler {
         String parameter = "origin="+origin+"&destination="+destination+"&mode="+MODE+"&key="+GOOGLE_API_KEY;
         HttpRequestHandler HH = new HttpRequestHandler("GET", api, parameter);
         String output = HH.getRequest();
-        System.out.println(output);
+        System.out.println(output);*/
 
         //test post request
         String data  = null;
@@ -44,6 +46,9 @@ public class HttpRequestHandler {
         HttpRequestHandler HP = new HttpRequestHandler("POST", "http://localhost:8080/wayfinding/authenticationAPI.php", data);
         String poutput = HP.postRequest();
         System.out.println(poutput);
+        Gson gson = new Gson();
+        AuthenNResponse response = gson.fromJson(poutput, AuthenNResponse.class);
+
 
     }
 

@@ -7,11 +7,21 @@ import java.util.List;
  * Remote authentication response
  */
 public class AuthenNResponse {
+    //code: steps_info; if modified: if tested
+    public final int CODE_NO_ROUTE = 0000;
+    public final int CODE_NO_STEP = 1000;
+    public final int CODE_NOT_MODIFIED = 1100;
+    public final int CODE_NOT_TESTED = 1110;
+    public final int CODE_ALL_TESTED = 1111;
+
+
+    private int status;
     private boolean success;
     private String message;
     private String user_id;
     private String route_id;
     private List<Point> points;
+    private List<Step> steps;
 
     public boolean getSuccess(){
         return success;
@@ -25,12 +35,20 @@ public class AuthenNResponse {
         return user_id;
     }
 
+    public int getStatus(){
+        return this.status;
+    }
+
     public String getRoute_id(){
         return route_id;
     }
 
     public List<Point> getPoints(){
         return points;
+    }
+
+    public  List<Step> getSteps(){
+        return this.steps;
     }
 
     public Point getStart(){

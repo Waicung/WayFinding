@@ -19,6 +19,14 @@ public class Step {
 
     }
 
+    public Step(){
+
+    }
+
+    public void setInstruction(String instruction){
+        this.instruction = instruction;
+    }
+
     public String toString(){
         return instruction;
     }
@@ -32,12 +40,22 @@ public class Step {
     }
 
     public Step clone(){
-        Point new_start_point = this.start_point.clone();
-        Point new_end_point= this.end_point.clone();
-        String new_instruction = this.instruction;
-        int new_duration=this.duration;
-        int new_distance=this.distance;
-        return new Step(new_start_point,new_end_point,new_instruction,new_duration,new_distance);
+        if(start_point!=null &&
+                end_point!=null) {
+            Point new_start_point = this.start_point.clone();
+            Point new_end_point = this.end_point.clone();
+            int new_duration = this.duration;
+            int new_distance = this.distance;
+            String new_instruction = this.instruction;
+            return new Step(new_start_point,new_end_point,new_instruction,new_duration,new_distance);
+        }
+        else {
+            String new_instruction = this.instruction;
+            Step new_step = new Step();
+            new_step.setInstruction(new_instruction);
+            return new_step;
+        }
+
     }
 
 

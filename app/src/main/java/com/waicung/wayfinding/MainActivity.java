@@ -3,21 +3,18 @@ package com.waicung.wayfinding;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.SQLException;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
-import java.lang.reflect.Array;
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -31,6 +28,7 @@ import java.util.concurrent.ExecutionException;
  * - Interact with user(instruction achieved and get lose)
  */
 public class MainActivity extends AppCompatActivity {
+    private int status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,19 +41,38 @@ public class MainActivity extends AppCompatActivity {
         //Set ListView for direction steps display.
         ListView steps_listView = (ListView)findViewById(R.id.steps_listView);
         if(checkUser()){
-            //if user exist, get steps from remote database
-            //TODO retrieveSteps(steps_listView);
-            Point start_point = new Point(-37.790950,144.927464);
-            Point end_point = new Point(-37.7909247,144.9228723);
-            new LoadStepAsyncTask(this).execute(start_point,end_point);
-            //displaySteps(steps_listView);
+            autoLogin();
+            this.status = checkStatus();
+            String message;
+            if (status == 1110){
+                displayInstruction(steps_listView);
+            }
+            else if (status == 1000){
+                //TODO uploadDirection();
+            }
+            else {
+                switch (status) {
+                    case 0000:
+                        message = "Please contact administrator";
+                        break;
+                    case 1100:
+                        message = "Instructions are preparing";
+                        break;
+                    case 1111:
+                        message = "All test finished";
+                        break;
+                    default:
+                        message = "unknown error";
+                        break;
+                }
+                Snackbar snackBar= Snackbar.make(findViewById(R.id.myCoordinatorLayout), message, Snackbar.LENGTH_LONG);
+                snackBar.show();
+            }
+
         }
-        else{
-            //retrieve direction from Google API
-            //TODO retrieveDirectionFromGG();
-        }
-        //displaySteps(steps_listView);
+
     }
+
 
 
     @Override
@@ -105,9 +122,9 @@ public class MainActivity extends AppCompatActivity {
     //To check if the a primary user exist
     private boolean checkUser(){
         //check if there is a user name in sharedPreference file
-        SharedPreferences sharePref = getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
-        String user_id = sharePref.getString(getString(R.string.preference_authenN_response), null);
-        if(user_id != "0"){
+        SharedPreferences sharePref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
+        String auth = sharePref.getString(getString(R.string.preference_authenN_response), null);
+        if(auth != null){
             return true;
         }
         else {
@@ -125,12 +142,62 @@ public class MainActivity extends AppCompatActivity {
         }*/
     }
 
+    private void autoLogin(){
+        SharedPreferences sharePref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
+        String auth = sharePref.getString(getString(R.string.preference_authenN_response), null);
+        System.out.println("here is the sharedpreference: " + auth);
+        String username = sharePref.getString("username", "wrong");
+        String password = sharePref.getString("password", "wrong");
+        new LoginAsyncTask(this).execute(username,password);
+    }
+
+    private int checkStatus(){
+        int status;
+        SharedPreferences sharePref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
+        String auth = sharePref.getString(getString(R.string.preference_authenN_response), null);
+        if(auth != null){
+            System.out.println(auth);
+            Gson gson = new Gson();
+            AuthenNResponse response = gson.fromJson(auth, AuthenNResponse.class);
+            status = response.getStatus();
+            return status;
+        }
+        else{
+            return 0;
+        }
+    }
+
+    private void displayInstruction(ListView lv){
+        Route route;
+        try {
+            route = (Route)new LoadRouteAsyncTask(this).execute(status).get();
+            List<String> instructions = route.getInstruction();
+            ArrayAdapter adapter = new ArrayAdapter<>(MainActivity.this,R.layout.list_item,R.id.tv_step,instructions);
+            lv.setAdapter(adapter);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void uploadDirection() {
+       /* try {
+            Route route = (Route) new LoadRouteAsyncTask(this).execute(status).get();
+            new UploadingAysncTask().execute(route);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }*/
+    }
 
     //retrieving Google direction API response and display it on ListView
     private void displaySteps(ListView lv) {
         ArrayList<String> steps;
         try{
-            steps = (ArrayList<String>) new LoadStepAsyncTask(this).execute().get();
+            steps = (ArrayList<String>) new LoadRouteAsyncTask(this).execute().get();
             new SaveRouteAsyncTask().execute(getApplicationContext(),"testfile.txt",steps.toString());
         }
         catch (InterruptedException e){}

@@ -44,7 +44,7 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        SharedPreferences.Editor editor = getSharedPreferences("UserInfo", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE).edit();
         editor.clear();
         editor.commit();
 

@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
                 String password = et_password.getText().toString();
                 //log in
                 try {
-                    result = new SigninAsyncTask(LoginActivity.this).execute(username, password).get();
+                    result = new LoginAsyncTask(LoginActivity.this).execute(username, password).get();
 
                 }catch (InterruptedException e) {
                     e.printStackTrace();
@@ -51,11 +51,10 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 //check if successful
-                if(result == "Success"){
+                if(result == "Successfully Login"){
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     LoginActivity.this.startActivity(intent);
                 }
-
 
             }
         });
