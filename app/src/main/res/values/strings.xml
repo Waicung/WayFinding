@@ -9,6 +9,10 @@
     <string name="logout">Log Out</string>
     <string name="preference_file_key">UserInfo</string>
     <string name="preference_authenN_response">authentication_response</string>
+    <string name="show_direction">Show Direction</string>
+    <string name="login_success">Login successfully</string>
+    <string name="login_fail">Login failed</string>
+    <string name="connection_error">Connection error</string>
 
 
 </resources>

@@ -2,11 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.waicung.wayfinding"
     android:versionCode="2"
-    android:versionName="1.1">>
+    android:versionName="1.1">
+    >
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +16,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,12 +27,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"
-            android:permission="android.permission.INTERNET"/>
+        <activity
+            android:name=".LoginActivity"
+            android:permission="android.permission.INTERNET" />
         <activity
             android:name=".AndroidDatabaseManager"
             android:theme="@style/Theme.AppCompat.Light" />
-        <activity android:name=".UserInfoActivity"></activity>
+        <activity android:name=".UserInfoActivity" />
+
+        <service
+            android:name=".TrackingService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

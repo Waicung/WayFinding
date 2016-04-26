@@ -72,10 +72,13 @@ public class LoginAsyncTask extends AsyncTask<String,Void,String>{
             editor.putString("password", password);
             editor.putInt("status", response.getStatus());
             editor.commit();
-            result = "Successfully Login";
+            result = context.getString(R.string.login_success);
+        }
+        else if (response==null){
+            result = context.getString(R.string.connection_error);
         }
         else{
-            result = "Login failed";
+            result = context.getString(R.string.login_fail);
         }
         //do nothing
         return result;

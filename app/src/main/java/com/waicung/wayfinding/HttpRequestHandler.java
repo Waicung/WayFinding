@@ -102,7 +102,7 @@ public class HttpRequestHandler {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             //set properties of the connection
             conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
+            conn.setConnectTimeout(1000);
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);

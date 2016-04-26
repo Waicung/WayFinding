@@ -3,15 +3,23 @@ package com.waicung.wayfinding;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 
 import com.google.gson.Gson;
 
@@ -29,26 +37,35 @@ import java.util.concurrent.ExecutionException;
  */
 public class MainActivity extends AppCompatActivity {
     private int status;
+    private int route_id;
+    private PopupWindow startPopup;
+    private LayoutInflater layoutinflater;
+    private CoordinatorLayout mainLayout;
+    private Button show_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Set the main activity layout
         setContentView(R.layout.activity_main);
+        show_button = (Button) findViewById(R.id.show_button);
+        mainLayout = (CoordinatorLayout) findViewById(R.id.mainCoordinatorLayout);
         //Set toolbar(Action Bar) and its layout
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         //Set ListView for direction steps display.
-        ListView steps_listView = (ListView)findViewById(R.id.steps_listView);
+        final ListView steps_listView = (ListView)findViewById(R.id.steps_listView);
         if(checkUser()){
             autoLogin();
             this.status = checkStatus();
+            this.route_id = getRoute();
             String message;
             if (status == 1110){
-                displayInstruction(steps_listView);
+                show_button.setVisibility(View.VISIBLE);
             }
             else if (status == 1000){
-                //TODO uploadDirection();
+                //TODO
+                uploadDirection();
             }
             else {
                 switch (status) {
@@ -65,14 +82,33 @@ public class MainActivity extends AppCompatActivity {
                         message = "unknown error";
                         break;
                 }
-                Snackbar snackBar= Snackbar.make(findViewById(R.id.myCoordinatorLayout), message, Snackbar.LENGTH_LONG);
+                Snackbar snackBar= Snackbar.make(findViewById(R.id.mainCoordinatorLayout), message, Snackbar.LENGTH_LONG);
                 snackBar.show();
             }
 
         }
+        show_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayInstruction(steps_listView);
+                startShow();
+                show_button.setVisibility(View.GONE);
+            }
+        });
 
     }
 
+    private void startShow() {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = (int)Math.round(dm.widthPixels);
+        int height = (int)Math.round(dm.heightPixels);
+        layoutinflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        ViewGroup container = (ViewGroup) layoutinflater.inflate(R.layout.start_popup,null);
+        startPopup = new PopupWindow(container, width, height, true);
+        startPopup.showAtLocation(mainLayout, Gravity.NO_GRAVITY,0,0);
+
+    }
 
 
     @Override
@@ -167,6 +203,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private int getRoute(){
+        int route_id;
+        SharedPreferences sharePref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
+        String auth = sharePref.getString(getString(R.string.preference_authenN_response), null);
+        if(auth != null){
+            System.out.println(auth);
+            Gson gson = new Gson();
+            AuthenNResponse response = gson.fromJson(auth, AuthenNResponse.class);
+            route_id = Integer.parseInt(response.getRoute_id());
+            return route_id;
+        }
+        else{
+            return 0;
+        }
+    }
+
     private void displayInstruction(ListView lv){
         Route route;
         try {
@@ -183,14 +235,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void uploadDirection() {
-       /* try {
-            Route route = (Route) new LoadRouteAsyncTask(this).execute(status).get();
-            new UploadingAysncTask().execute(route);
+        //require Direction from Google
+        try {
+            Route route = (Route)new LoadRouteAsyncTask(this).execute(status).get();
+            new UploadRouteAysncTask(this).execute(route_id, route);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }*/
+        }
+
     }
 
     //retrieving Google direction API response and display it on ListView
