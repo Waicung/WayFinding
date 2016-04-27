@@ -1,4 +1,4 @@
-package com.waicung.wayfinding;
+package com.waicung.wayfinding.models;
 
 import java.util.List;
 

@@ -1,21 +1,16 @@
-package com.waicung.wayfinding;
-
-import android.util.Log;
+package com.waicung.wayfinding.oldfiles;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.models.AuthenNResponse;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.List;
 
 /**
  * Created by waicung on 19/04/2016.

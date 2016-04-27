@@ -1,4 +1,6 @@
-package com.waicung.wayfinding;
+package com.waicung.wayfinding.oldfiles;
+
+import com.waicung.wayfinding.models.Step;
 
 import java.io.BufferedReader;
 import java.io.IOException;

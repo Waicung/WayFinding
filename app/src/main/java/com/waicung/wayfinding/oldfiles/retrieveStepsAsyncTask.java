@@ -1,13 +1,9 @@
-package com.waicung.wayfinding;
+package com.waicung.wayfinding.oldfiles;
 
 import android.os.AsyncTask;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import com.waicung.wayfinding.models.Step;
+
 import java.util.ArrayList;
 
 /**

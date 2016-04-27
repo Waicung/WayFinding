@@ -1,4 +1,4 @@
-package com.waicung.wayfinding;
+package com.waicung.wayfinding.models;
 
 /**
  * Created by waicung on 14/04/2016.

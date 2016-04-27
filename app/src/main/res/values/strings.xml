@@ -13,6 +13,7 @@
     <string name="login_success">Login successfully</string>
     <string name="login_fail">Login failed</string>
     <string name="connection_error">Connection error</string>
+    <string name="start">START</string>
 
 
 </resources>

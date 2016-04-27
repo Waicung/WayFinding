@@ -22,15 +22,19 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "FindWay.db";
     //information of user table:(id,password,primary_user)
     //primary indicate if a user is the main user of the app, whose activity will be recorded
-    public static final String USER_TABLE_NAME = "users";
-    public static final String USER_ID = "id";
-    public static final String USER_PASSWORD = "password";
-    public static final String PRIMARY_USER = "primary_user";
+    public static final String LOCATION_TABLE_NAME = "locations";
+    public static final String LOCATION_TIMESTAMP = "time_stamp";
+    public static final String LOCATION_LAT = "latitude";
+    public static final String LOCATION_LNG = "longitude";
+    public static final String LOCATION_STEP = "step";
     //create user table query
-    private static final String USER_TABLE_CREATE =
-            "CREATE TABLE " + USER_TABLE_NAME + " (" +
-                    USER_ID + " TEXT PRIMARY KEY, " +
-                    USER_PASSWORD + " TEXT NOT NULL," + PRIMARY_USER + " INTEGER);";
+    private static final String LOCATION_TABLE_CREATE =
+            "CREATE TABLE " + LOCATION_TABLE_NAME + " (" +
+                    "id" + " INTEGER PRIMARY KEY," +
+                    LOCATION_TIMESTAMP + " Long NOT NULL," +
+                    LOCATION_LAT + " DOUBLE NOT NULL," +
+                    LOCATION_LNG + " DOUBLE NOT NULL," +
+                    LOCATION_STEP + " INT NOT NULL);";
 
     DBOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -38,26 +42,27 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //create user table
-        db.execSQL(USER_TABLE_CREATE);
+        //create a new table for each task
+        db.execSQL("DROP TABLE IF EXISTS " + LOCATION_TABLE_NAME);
+        db.execSQL(LOCATION_TABLE_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //drop user table and create a new one
-        db.execSQL("DROP TABLE IF EXITS" + USER_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + LOCATION_TABLE_NAME);
         onCreate(db);
     }
 
     //method for user record insertion
-    public boolean insertUser (String user, String password, int key){
+    public boolean insertLocation (Double lagitude, Double longitude, long time, int step){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(USER_ID, user);
-        contentValues.put(USER_PASSWORD, password);
-        contentValues.put(PRIMARY_USER,key);
-        db.insert(USER_TABLE_NAME, null, contentValues);
-        Log.v("Account Info", user +" " + password);
+        contentValues.put(LOCATION_LAT, lagitude);
+        contentValues.put(LOCATION_LNG, longitude);
+        contentValues.put(LOCATION_TIMESTAMP, time);
+        contentValues.put(LOCATION_STEP, step);
+        db.insert(LOCATION_TABLE_NAME, null, contentValues);
         return true;
     }
 
@@ -75,28 +80,6 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
     }
 
-    //Check if a user record is in the database
-    public boolean checkIfUserExist(String user_name){
-        Cursor cursor = this.getDataBy("id", "'"+user_name+"'");
-        if(cursor.getCount() <= 0){
-            cursor.close();
-            return false;
-        }
-        cursor.close();
-        return true;
-
-    }
-
-    //Update a user as the main user or should be regards as normal user
-    //key 0 as normal user, 1 as primary user
-    public boolean asPrimary(String user_name,int key){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "Update " + USER_TABLE_NAME +
-                " SET " + PRIMARY_USER +" = " + key +
-                " WHERE " + USER_ID + " = '" + user_name + "'";
-        db.execSQL(query);
-        return true;
-    }
 
     //method for debugging purpose
     public ArrayList<Cursor> getData(String Query){

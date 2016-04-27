@@ -1,4 +1,6 @@
-package com.waicung.wayfinding;
+package com.waicung.wayfinding.webclient;
+
+import com.waicung.wayfinding.models.Point;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,14 +37,14 @@ public class GGDirectionHelper {
 
     //When no parameter passed for a new instance,
     //default value will be used
-    GGDirectionHelper(){
+    public GGDirectionHelper(){
         //origin = "-37.799538,144.958053";
         origin = "-37.790950,144.927464";
         //destination = "-37.799901,144.943267";
         destination = "-37.7909247,144.9228723";
     }
 
-    GGDirectionHelper(Point origin, Point destination){
+    public GGDirectionHelper(Point origin, Point destination){
         //a constructor got the longitude and latitude of the origin and destination
         this.origin = origin.toString();
         this.destination = destination.toString();

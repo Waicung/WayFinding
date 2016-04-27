@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -22,6 +23,12 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.models.AuthenNResponse;
+import com.waicung.wayfinding.models.Route;
+import com.waicung.wayfinding.oldfiles.SaveRouteAsyncTask;
+import com.waicung.wayfinding.oldfiles.readRouteAsyncTask;
+import com.waicung.wayfinding.webclient.LoginAsyncTask;
+import com.waicung.wayfinding.webclient.UploadRouteAysncTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +114,16 @@ public class MainActivity extends AppCompatActivity {
         ViewGroup container = (ViewGroup) layoutinflater.inflate(R.layout.start_popup,null);
         startPopup = new PopupWindow(container, width, height, true);
         startPopup.showAtLocation(mainLayout, Gravity.NO_GRAVITY,0,0);
+
+        container.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Intent trackingIntent = new Intent(MainActivity.this,TrackingService.class);
+                startService(trackingIntent);
+                startPopup.dismiss();
+                return false;
+            }
+        });
 
     }
 
@@ -221,10 +238,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayInstruction(ListView lv){
         Route route;
+        int iconID = R.drawable.ic_ncheck;
         try {
             route = (Route)new LoadRouteAsyncTask(this).execute(status).get();
             List<String> instructions = route.getInstruction();
             ArrayAdapter adapter = new ArrayAdapter<>(MainActivity.this,R.layout.list_item,R.id.tv_step,instructions);
+            //CustomAdapter adapter = new CustomAdapter(this,instructions, iconID);
             lv.setAdapter(adapter);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -247,29 +266,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //retrieving Google direction API response and display it on ListView
-    private void displaySteps(ListView lv) {
-        ArrayList<String> steps;
-        try{
-            steps = (ArrayList<String>) new LoadRouteAsyncTask(this).execute().get();
-            new SaveRouteAsyncTask().execute(getApplicationContext(),"testfile.txt",steps.toString());
-        }
-        catch (InterruptedException e){}
-        catch (ExecutionException e){}
-
-        try {
-            String instructions = (String) new readRouteAsyncTask().execute(this,"testfile.txt").get();
-            ArrayList ins_array = new ArrayList();
-            ins_array.add(instructions);
-            ArrayAdapter adapter = new ArrayAdapter<String>(MainActivity.this,R.layout.list_item,R.id.tv_step,ins_array);
-            lv.setAdapter(adapter);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     //for opening the database manager for debugging
     private  void openDbManager(){

@@ -1,4 +1,4 @@
-package com.waicung.wayfinding;
+package com.waicung.wayfinding.webclient;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.models.AuthenNResponse;
+import com.waicung.wayfinding.R;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -21,7 +23,9 @@ import java.net.URLEncoder;
 public class LoginAsyncTask extends AsyncTask<String,Void,String>{
     //The context of the database operation
     private Context context;
-    private String api = "http://10.0.2.2:8080/wayfinding/authenticationAPI.php";
+    //private String api = "http://192.168.1.8:8080/wayfinding/authenticationAPI.php";
+    //private String api = "http://wayfinding.magicjane.org/read_all_steps.php";
+    private String api = "http://wayfinding.magicjane.org/authenticationAPI.php";
     String postData;
     ProgressDialog pd;
 

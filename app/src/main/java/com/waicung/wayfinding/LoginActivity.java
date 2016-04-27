@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.waicung.wayfinding.webclient.LoginAsyncTask;
+
 import java.util.concurrent.ExecutionException;
 
 /**

@@ -1,6 +1,5 @@
-package com.waicung.wayfinding;
+package com.waicung.wayfinding.models;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 

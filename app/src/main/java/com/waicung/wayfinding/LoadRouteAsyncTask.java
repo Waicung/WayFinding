@@ -6,6 +6,11 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.models.AuthenNResponse;
+import com.waicung.wayfinding.models.Point;
+import com.waicung.wayfinding.models.Route;
+import com.waicung.wayfinding.models.Step;
+import com.waicung.wayfinding.webclient.GGDirectionHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;

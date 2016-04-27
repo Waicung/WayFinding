@@ -1,11 +1,12 @@
-package com.waicung.wayfinding;
+package com.waicung.wayfinding.webclient;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.models.Route;
+import com.waicung.wayfinding.webclient.HttpRequestHandler;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -15,7 +16,9 @@ import java.net.URLEncoder;
  */
 public class UploadRouteAysncTask extends AsyncTask{
     Context context;
-    private String api = "http://10.0.2.2:8080/wayfinding/receiveRoute.php";
+    private String testapi = "http://10.0.2.2:8080/wayfinding/receiveRoute.php";
+    private String api = "http://wayfinding.magicjane.org/authenticationAPI.php";
+
     String postData;
     ProgressDialog pd;
 
@@ -28,7 +31,7 @@ public class UploadRouteAysncTask extends AsyncTask{
 
     }
 
-    UploadRouteAysncTask(Context context){
+    public UploadRouteAysncTask(Context context){
         this.context = context;
     }
 

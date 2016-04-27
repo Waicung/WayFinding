@@ -33,7 +33,8 @@
         <activity
             android:name=".AndroidDatabaseManager"
             android:theme="@style/Theme.AppCompat.Light" />
-        <activity android:name=".UserInfoActivity" />
+        <activity android:name=".UserInfoActivity"
+            />
 
         <service
             android:name=".TrackingService"

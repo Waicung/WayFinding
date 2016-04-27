@@ -1,6 +1,9 @@
-package com.waicung.wayfinding;
+package com.waicung.wayfinding.webclient;
+
+import android.util.Log;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.models.AuthenNResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +46,9 @@ public class HttpRequestHandler {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        HttpRequestHandler HP = new HttpRequestHandler("POST", "http://localhost:8080/wayfinding/authenticationAPI.php", data);
+        String testurl ="http://localhost:8080/wayfinding/authenticationAPI.php";
+        String realurl = "http://wayfinding.magicjane.org/authenticationAPI.php";
+        HttpRequestHandler HP = new HttpRequestHandler("POST", testurl, data);
         String poutput = HP.postRequest();
         System.out.println(poutput);
         Gson gson = new Gson();
@@ -52,7 +57,7 @@ public class HttpRequestHandler {
 
     }
 
-    HttpRequestHandler(String method, String api, String parameters){
+    public HttpRequestHandler(String method, String api, String parameters){
         this.data = parameters;
         System.out.println("getAPI: " + api);
         switch (method){
@@ -108,6 +113,7 @@ public class HttpRequestHandler {
             conn.setDoOutput(true);
             //set post data(change it to byte data)
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+            Log.i("http request", data);
             wr.write(data);
             wr.flush();
             wr.close();
@@ -125,6 +131,8 @@ public class HttpRequestHandler {
             System.out.println("IOException : " + e.getMessage());
         }
         response = Str.toString();
+        Log.i("Http response" , response);
+        System.out.println("Http response: " + response);
         return response;
     }
 
