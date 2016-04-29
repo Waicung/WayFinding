@@ -4,13 +4,20 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+
 
 public class TrackingService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
@@ -25,6 +32,21 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private float minDisplacement;
     private long currentTime;
     private int currentStep;
+    private final String TAG = "TrackingService";
+
+    // Binder given to clients
+    private final IBinder mBinder = new LocalBinder();
+
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class LocalBinder extends Binder {
+        TrackingService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return TrackingService.this;
+        }
+    }
 
     public TrackingService() {
 
@@ -53,6 +75,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mGoogleApiClient.connect();
+        Log.i(TAG, "starting connection");
         return super.onStartCommand(intent, flags, startId);
 
 
@@ -60,8 +83,10 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public IBinder onBind(Intent intent) {
+        mGoogleApiClient.connect();
+        Log.i(TAG, "starting connection");
         // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return mBinder;
     }
 
     public GoogleApiClient createGoogleApiClient(){
@@ -84,7 +109,12 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     protected void startLocationUpdates(){
         LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient,mLocationRequest,this);
+                mGoogleApiClient, mLocationRequest, new LocationCallback() {
+                    @Override
+                    public void onLocationAvailability(LocationAvailability locationAvailability) {
+                        Log.i(TAG," " + locationAvailability);
+                    }
+                },null);
     }
 
 
@@ -94,22 +124,30 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     }
 
     private void handleNewLocation(Location location) {
-
-        mCurrentLatitude = location.getLatitude();
-        mCurrentLongitude = location.getLongitude();
-        currentTime = System.currentTimeMillis();
-        DB.insertLocation(mCurrentLatitude, mCurrentLongitude,currentTime, currentStep);
+        if (location != null) {
+            Log.i(TAG, "get a location update");
+            mCurrentLatitude = location.getLatitude();
+            mCurrentLongitude = location.getLongitude();
+            currentTime = System.currentTimeMillis() / 1000;
+            DB.insertLocation(mCurrentLatitude, mCurrentLongitude, currentTime, currentStep);
+        }
+        else {
+            Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
+        }
 
 
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
 
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult  .getErrorCode());
 
     }
 
@@ -119,7 +157,11 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     }
 
     public void setStep(int step){
-        this.currentStep = step;
+        this.currentStep =  step;
+        Log.i(TAG, "step set as " + currentStep);
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        handleNewLocation(location);
     }
+
 
 }

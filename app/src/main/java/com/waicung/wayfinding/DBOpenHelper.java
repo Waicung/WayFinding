@@ -9,7 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.database.MatrixCursor;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import com.waicung.wayfinding.models.LocationRecord;
 
 /**
  * Created by waicung on 30/03/2016.
@@ -54,6 +56,11 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void newRecord(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        onCreate(db);
+    }
+
     //method for user record insertion
     public boolean insertLocation (Double lagitude, Double longitude, long time, int step){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -66,22 +73,34 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    //get record according to a value in specific column
-    public Cursor getDataBy(String column, String key){
+    //return all the record
+    public ArrayList<LocationRecord> getData(){
+        ArrayList<LocationRecord> locations = new ArrayList<>();
         Cursor cursor;
         SQLiteDatabase db = this.getReadableDatabase();
-        if(column=="primary_user"){
-            int x = Integer.parseInt(key);
-            cursor = db.rawQuery("SELECT * FROM users where " + column + "=" + x, null);
+        cursor = db.rawQuery("SELECT * FROM " + LOCATION_TABLE_NAME + " LIMIT 10", null);
+        while (cursor.moveToNext()){
+            double lat = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(DBOpenHelper.LOCATION_LAT)
+            );
+            double lng = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(DBOpenHelper.LOCATION_LNG)
+            );
+            long time = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(DBOpenHelper.LOCATION_TIMESTAMP)
+            );
+            int step_number = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(DBOpenHelper.LOCATION_STEP)
+            );
+            LocationRecord location = new LocationRecord(lat,lng,time,step_number);
+            locations.add(location);
         }
-        else{
-        cursor = db.rawQuery("SELECT * FROM users where " + column + "=" + key, null);}
-        return cursor;
+        return locations;
 
     }
 
 
-    //method for debugging purpose
+    //TODO delete. method for debugging purpose
     public ArrayList<Cursor> getData(String Query){
         //get writable database
         SQLiteDatabase sqlDB = this.getWritableDatabase();

@@ -20,6 +20,7 @@ public class AuthenNResponse {
     private String message;
     private String user_id;
     private String route_id;
+    private String assignment_id;
     private List<Point> points;
     private List<Step> steps;
 
@@ -49,6 +50,10 @@ public class AuthenNResponse {
 
     public  List<Step> getSteps(){
         return this.steps;
+    }
+
+    public String getAssignment_id(){
+        return this.assignment_id;
     }
 
     public Point getStart(){

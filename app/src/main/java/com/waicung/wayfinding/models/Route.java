@@ -36,6 +36,10 @@ public class Route {
         return instructions.toString();
     }
 
+    public ArrayList<Step> getSteps(){
+        return this.steps;
+    }
+
     public Point getPoint(String end){
         switch(end) {
             case "start":

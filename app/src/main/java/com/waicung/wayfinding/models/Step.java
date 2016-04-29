@@ -58,5 +58,9 @@ public class Step {
 
     }
 
+    public String getInstruction(){
+        return this.instruction;
+    }
+
 
 }

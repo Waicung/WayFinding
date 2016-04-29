@@ -1,14 +1,22 @@
 package com.waicung.wayfinding;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.IBinder;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,7 +25,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -25,15 +32,14 @@ import android.widget.PopupWindow;
 import com.google.gson.Gson;
 import com.waicung.wayfinding.models.AuthenNResponse;
 import com.waicung.wayfinding.models.Route;
-import com.waicung.wayfinding.oldfiles.SaveRouteAsyncTask;
-import com.waicung.wayfinding.oldfiles.readRouteAsyncTask;
 import com.waicung.wayfinding.webclient.LoginAsyncTask;
+import com.waicung.wayfinding.webclient.UploadLocationRecords;
 import com.waicung.wayfinding.webclient.UploadRouteAysncTask;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import com.waicung.wayfinding.models.*;
 /**
  * Main activity of Wayfinding
  * Main feature:
@@ -43,12 +49,30 @@ import java.util.concurrent.ExecutionException;
  * - Interact with user(instruction achieved and get lose)
  */
 public class MainActivity extends AppCompatActivity {
+    DBOpenHelper DB = new DBOpenHelper(this);
+    ServiceConnection serviceConn;
     private int status;
+    private String assignment_id;
     private int route_id;
     private PopupWindow startPopup;
     private LayoutInflater layoutinflater;
     private CoordinatorLayout mainLayout;
     private Button show_button;
+    private int step;
+    private TrackingService tService;
+    private boolean mBound = false;
+    private final String TAG = "MainActivity";
+
+    private BroadcastReceiver stepReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Extract data included in the Intent
+            step = intent.getIntExtra("step" , 0);
+            Log.i(TAG, "Got message: " + step);
+            //TODO pass to tracking service
+            tService.setStep(step);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +84,31 @@ public class MainActivity extends AppCompatActivity {
         //Set toolbar(Action Bar) and its layout
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                //TODO stop the tracking
+                unbindService(serviceConn);
+                UploadResult();
+
+            }
+        });
         //Set ListView for direction steps display.
         final ListView steps_listView = (ListView)findViewById(R.id.steps_listView);
         if(checkUser()){
             autoLogin();
             this.status = checkStatus();
-            this.route_id = getRoute();
+            this.route_id = getRoute_id();
+            this.assignment_id = getAssignmentID();
             String message;
             if (status == 1110){
                 show_button.setVisibility(View.VISIBLE);
+                LocalBroadcastManager.getInstance(this).registerReceiver(stepReceiver,
+                        new IntentFilter("newStep"));
             }
             else if (status == 1000){
                 //TODO
@@ -100,9 +140,32 @@ public class MainActivity extends AppCompatActivity {
                 displayInstruction(steps_listView);
                 startShow();
                 show_button.setVisibility(View.GONE);
+                fab.setVisibility(View.VISIBLE);
             }
         });
 
+    }
+
+    private int getRoute_id() {
+        int route_id;
+        SharedPreferences sharePref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
+        String auth = sharePref.getString(getString(R.string.preference_authenN_response), null);
+        if(auth != null){
+            Log.i(TAG, "get route id");
+            Gson gson = new Gson();
+            AuthenNResponse response = gson.fromJson(auth, AuthenNResponse.class);
+            route_id = Integer.parseInt(response.getRoute_id());
+            return route_id;
+        }
+        else{
+            return 0;
+        }
+    }
+
+    private void UploadResult() {
+        ArrayList<LocationRecord> locations;
+        locations = DB.getData();
+        new UploadLocationRecords().execute(assignment_id,locations);
     }
 
     private void startShow() {
@@ -118,8 +181,27 @@ public class MainActivity extends AppCompatActivity {
         container.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                //TODO start location update service
                 Intent trackingIntent = new Intent(MainActivity.this,TrackingService.class);
-                startService(trackingIntent);
+                //startService(trackingIntent);
+                /** Defines callbacks for service binding, passed to bindService() */
+                serviceConn = new ServiceConnection() {
+
+                    @Override
+                    public void onServiceConnected(ComponentName className,
+                                                   IBinder service) {
+                        // We've bound to LocalService, cast the IBinder and get LocalService instance
+                        TrackingService.LocalBinder binder = (TrackingService.LocalBinder) service;
+                        tService = binder.getService();
+                        mBound = true;
+                    }
+
+                    @Override
+                    public void onServiceDisconnected(ComponentName arg0) {
+                        mBound = false;
+                    }
+                };
+                bindService(trackingIntent, serviceConn, Context.BIND_AUTO_CREATE);
                 startPopup.dismiss();
                 return false;
             }
@@ -198,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
     private void autoLogin(){
         SharedPreferences sharePref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
         String auth = sharePref.getString(getString(R.string.preference_authenN_response), null);
-        System.out.println("here is the sharedpreference: " + auth);
+        Log.i(TAG, "autologin");
         String username = sharePref.getString("username", "wrong");
         String password = sharePref.getString("password", "wrong");
         new LoginAsyncTask(this).execute(username,password);
@@ -209,10 +291,10 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharePref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
         String auth = sharePref.getString(getString(R.string.preference_authenN_response), null);
         if(auth != null){
-            System.out.println(auth);
             Gson gson = new Gson();
             AuthenNResponse response = gson.fromJson(auth, AuthenNResponse.class);
             status = response.getStatus();
+            Log.i(TAG, "have status: " + status);
             return status;
         }
         else{
@@ -220,37 +302,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private int getRoute(){
-        int route_id;
+    private String getAssignmentID(){
+        String assignment_id;
         SharedPreferences sharePref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
         String auth = sharePref.getString(getString(R.string.preference_authenN_response), null);
         if(auth != null){
-            System.out.println(auth);
+            Log.i(TAG, "get assignment ID");
             Gson gson = new Gson();
             AuthenNResponse response = gson.fromJson(auth, AuthenNResponse.class);
-            route_id = Integer.parseInt(response.getRoute_id());
-            return route_id;
+            assignment_id = response.getAssignment_id();
+            return assignment_id;
         }
         else{
-            return 0;
+            return "";
         }
     }
 
     private void displayInstruction(ListView lv){
         Route route;
-        int iconID = R.drawable.ic_ncheck;
         try {
             route = (Route)new LoadRouteAsyncTask(this).execute(status).get();
-            List<String> instructions = route.getInstruction();
-            ArrayAdapter adapter = new ArrayAdapter<>(MainActivity.this,R.layout.list_item,R.id.tv_step,instructions);
-            //CustomAdapter adapter = new CustomAdapter(this,instructions, iconID);
+            ArrayList<Step> steps = route.getSteps();
+            //ArrayAdapter adapter = new ArrayAdapter<>(MainActivity.this,R.layout.list_item,R.id.tv_step,instructions);
+            CustomAdapter adapter = new CustomAdapter(MainActivity.this,steps);
             lv.setAdapter(adapter);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+        DB.newRecord();
 
+    }
+    
+    public void setStep(int step){
+        this.step = step;
     }
 
     private void uploadDirection() {
@@ -267,12 +353,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //for opening the database manager for debugging
+    //TODO delete. for opening the database manager for debugging
     private  void openDbManager(){
         Intent dbmanager = new Intent(this,AndroidDatabaseManager.class);
         startActivity(dbmanager);
     }
 
-//Check if a user exist and set actionbar icon accordingly
 
 }

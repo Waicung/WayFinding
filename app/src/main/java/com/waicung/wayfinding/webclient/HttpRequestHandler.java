@@ -25,6 +25,7 @@ public class HttpRequestHandler {
     private URL url;
     private String data;
     private HttpURLConnection conn;
+    private final String TAG = "HttprequestHandler";
 
     public static void main(String args[]){
         //test get request
@@ -50,7 +51,7 @@ public class HttpRequestHandler {
         String realurl = "http://wayfinding.magicjane.org/authenticationAPI.php";
         HttpRequestHandler HP = new HttpRequestHandler("POST", testurl, data);
         String poutput = HP.postRequest();
-        System.out.println(poutput);
+        //Log.i(TAG, poutput);
         Gson gson = new Gson();
         AuthenNResponse response = gson.fromJson(poutput, AuthenNResponse.class);
 
@@ -59,7 +60,6 @@ public class HttpRequestHandler {
 
     public HttpRequestHandler(String method, String api, String parameters){
         this.data = parameters;
-        System.out.println("getAPI: " + api);
         switch (method){
             case "GET":
             try {
@@ -113,12 +113,11 @@ public class HttpRequestHandler {
             conn.setDoOutput(true);
             //set post data(change it to byte data)
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-            Log.i("http request", data);
             wr.write(data);
             wr.flush();
             wr.close();
             //get response from the connection
-            System.out.println("postRequest: " + conn.getResponseCode());
+            Log.i(TAG, Integer.valueOf(conn.getResponseCode()).toString());
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = reader.readLine();
             //read response as string
@@ -128,11 +127,10 @@ public class HttpRequestHandler {
             }
         }
         catch (IOException e){
-            System.out.println("IOException : " + e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
         response = Str.toString();
-        Log.i("Http response" , response);
-        System.out.println("Http response: " + response);
+        Log.i(TAG , response);
         return response;
     }
 

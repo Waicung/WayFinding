@@ -3,21 +3,24 @@ package com.waicung.wayfinding.webclient;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.models.LocationRecord;
 import com.waicung.wayfinding.models.Route;
-import com.waicung.wayfinding.webclient.HttpRequestHandler;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 /**
- * Created by waicung on 23/04/2016.
+ * Created by waicung on 28/04/2016.
  */
-public class UploadRouteAysncTask extends AsyncTask{
+public class UploadLocationRecords extends AsyncTask {
     Context context;
-    private String testapi = "http://10.0.2.2:8080/wayfinding/receiveRoute.php";
-    private String api = "http://wayfinding.magicjane.org/receiveRoute.php";
+    //private String api = "http://wayfinding.magicjane.org/receiveLocations.php";
+    private  String api = "http://192.168.43.12:8080/wayfinding/receiveLocations.php";
 
     String postData;
     ProgressDialog pd;
@@ -25,28 +28,24 @@ public class UploadRouteAysncTask extends AsyncTask{
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        pd = new ProgressDialog(context);
-        pd.setMessage("Organizing data");
-        pd.show();
+        /*pd = new ProgressDialog(context);
+        pd.setMessage("Uploading results");
+        pd.show();*/
 
-    }
-
-    public UploadRouteAysncTask(Context context){
-        this.context = context;
     }
 
     @Override
     protected Object doInBackground(Object[] params) {
-        Route route = (Route) params[1];
-        String route_id = String.valueOf(params[0]);
+        ArrayList<LocationRecord> locations = (ArrayList<LocationRecord>) params[1];
+        String assignment_id = String.valueOf(params[0]);
         Gson gson = new Gson();
         try {
-            postData = "route=" + URLEncoder.encode(gson.toJson(route),"UTF-8") +
-                    "&route_id=" + URLEncoder.encode(route_id, "UTF-8");
+            Log.i("Locations", gson.toJson(locations));
+            postData = "locations=" + URLEncoder.encode(gson.toJson(locations),"UTF-8") +
+                    "&assignment_id=" + URLEncoder.encode(assignment_id, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        System.out.println("Upload Data: " + gson.toJson(route));
         HttpRequestHandler HH = new HttpRequestHandler("POST", api, postData);
         String output = HH.postRequest();
         System.out.println("Response from uploading: " + output);
