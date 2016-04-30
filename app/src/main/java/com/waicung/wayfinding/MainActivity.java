@@ -33,7 +33,7 @@ import com.google.gson.Gson;
 import com.waicung.wayfinding.models.AuthenNResponse;
 import com.waicung.wayfinding.models.Route;
 import com.waicung.wayfinding.webclient.LoginAsyncTask;
-import com.waicung.wayfinding.webclient.UploadLocationRecords;
+import com.waicung.wayfinding.webclient.UploadLocationAsyncTask;
 import com.waicung.wayfinding.webclient.UploadRouteAysncTask;
 
 import java.util.ArrayList;
@@ -102,15 +102,16 @@ public class MainActivity extends AppCompatActivity {
         if(checkUser()){
             autoLogin();
             this.status = checkStatus();
-            this.route_id = getRoute_id();
-            this.assignment_id = getAssignmentID();
             String message;
             if (status == 1110){
+                this.route_id = getRoute_id();
+                this.assignment_id = getAssignmentID();
                 show_button.setVisibility(View.VISIBLE);
                 LocalBroadcastManager.getInstance(this).registerReceiver(stepReceiver,
                         new IntentFilter("newStep"));
             }
             else if (status == 1000){
+                this.route_id = getRoute_id();
                 //TODO
                 uploadDirection();
             }
@@ -165,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
     private void UploadResult() {
         ArrayList<LocationRecord> locations;
         locations = DB.getData();
-        new UploadLocationRecords().execute(assignment_id,locations);
+        new UploadLocationAsyncTask(this).execute(assignment_id,locations);
     }
 
     private void startShow() {
@@ -351,7 +352,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
 
     //TODO delete. for opening the database manager for debugging
     private  void openDbManager(){

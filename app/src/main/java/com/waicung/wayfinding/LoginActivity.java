@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.waicung.wayfinding.config.ConfigHandler;
 import com.waicung.wayfinding.webclient.LoginAsyncTask;
 
 import java.util.concurrent.ExecutionException;
@@ -22,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
     Button login_btn, cancel_btn;
     EditText et_user, et_password;
     TextView status;
+    String api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,9 @@ public class LoginActivity extends AppCompatActivity {
         et_user = (EditText)findViewById(R.id.editText_user);
         et_password = (EditText)findViewById(R.id.editText_password);
         status = (TextView)findViewById(R.id.textView_status);
+
+        ConfigHandler config = new ConfigHandler(this, "config");
+        api = config.getApi("Login");
 
         login_btn.setOnClickListener(new View.OnClickListener(){
 
@@ -73,6 +78,8 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+
 
     }
 

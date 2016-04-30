@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.R;
+import com.waicung.wayfinding.config.ConfigHandler;
 import com.waicung.wayfinding.models.LocationRecord;
 import com.waicung.wayfinding.models.Route;
 
@@ -17,13 +19,20 @@ import java.util.ArrayList;
 /**
  * Created by waicung on 28/04/2016.
  */
-public class UploadLocationRecords extends AsyncTask {
-    Context context;
+public class UploadLocationAsyncTask extends AsyncTask {
+    private Context context;
     //private String api = "http://wayfinding.magicjane.org/receiveLocations.php";
-    private  String api = "http://192.168.43.12:8080/wayfinding/receiveLocations.php";
+    private  String api; //= "http://192.168.43.12:8080/wayfinding/receiveLocations.php";
 
     String postData;
     ProgressDialog pd;
+
+    public UploadLocationAsyncTask(Context context){
+        this.context = context;
+        ConfigHandler config = new ConfigHandler(context, "config");
+        api = config.getApi(context.getString(R.string.api_upload_location));
+
+    }
 
     @Override
     protected void onPreExecute() {

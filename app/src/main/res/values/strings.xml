@@ -16,6 +16,9 @@
     <string name="start">START</string>
     <string name="title_activity_basic">BasicActivity</string>
     <string name="no_location_detected">Check location setting</string>
+    <string name="api_upload_location">uploadLocation</string>
+    <string name="api_upload_route">uploadRoute</string>
+    <string name="api_authentication">authentication</string>
 
 
 </resources>

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.config.ConfigHandler;
 import com.waicung.wayfinding.models.AuthenNResponse;
 import com.waicung.wayfinding.models.Point;
 import com.waicung.wayfinding.models.Route;
@@ -34,6 +35,7 @@ public class LoadRouteAsyncTask extends AsyncTask{
 
     LoadRouteAsyncTask(Context context){
         this.context = context;
+        ConfigHandler config = new ConfigHandler(context, "config");
     }
 
     @Override

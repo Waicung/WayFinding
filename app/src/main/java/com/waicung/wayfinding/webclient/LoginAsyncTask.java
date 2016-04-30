@@ -4,9 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.config.ConfigHandler;
 import com.waicung.wayfinding.models.AuthenNResponse;
 import com.waicung.wayfinding.R;
 
@@ -23,14 +25,15 @@ import java.net.URLEncoder;
 public class LoginAsyncTask extends AsyncTask<String,Void,String>{
     //The context of the database operation
     private Context context;
-    //private String api = "http://192.168.1.8:8080/wayfinding/authenticationAPI.php";
-    //private String api = "http://wayfinding.magicjane.org/read_all_steps.php";
-    private String api = "http://wayfinding.magicjane.org/authenticationAPI.php";
+    private String api;
     String postData;
     ProgressDialog pd;
+    String TAG = "LoginAsyncTask";
 
     public LoginAsyncTask(Context context) {
         this.context = context;
+        ConfigHandler config = new ConfigHandler(context, "config");
+        this.api = config.getApi(context.getString(R.string.api_authentication));
 
     }
 
@@ -49,7 +52,7 @@ public class LoginAsyncTask extends AsyncTask<String,Void,String>{
         //check if success
         String username = params[0];
         String password = params[1];
-        System.out.println("asking for authentication: " + "username: " + username +" password: " + password);
+        Log.i(TAG,"asking for authentication: " + "username: " + username +" password: " + password);
         try {
             postData = "username=" + URLEncoder.encode(username, "UTF-8") +
                     "&password=" + URLEncoder.encode(password,"UTF-8");

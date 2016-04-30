@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.google.gson.Gson;
+import com.waicung.wayfinding.R;
+import com.waicung.wayfinding.config.ConfigHandler;
 import com.waicung.wayfinding.models.Route;
 import com.waicung.wayfinding.webclient.HttpRequestHandler;
 
@@ -16,11 +18,19 @@ import java.net.URLEncoder;
  */
 public class UploadRouteAysncTask extends AsyncTask{
     Context context;
-    private String testapi = "http://10.0.2.2:8080/wayfinding/receiveRoute.php";
-    private String api = "http://wayfinding.magicjane.org/receiveRoute.php";
+    //private String testapi = "http://10.0.2.2:8080/wayfinding/receiveRoute.php";
+    private String api;// = "http://wayfinding.magicjane.org/receiveRoute.php";
 
     String postData;
     ProgressDialog pd;
+
+
+    public UploadRouteAysncTask(Context context){
+        this.context = context;
+        ConfigHandler config = new ConfigHandler(context, "config");
+        this.api = config.getApi(context.getString(R.string.api_upload_route));
+
+    }
 
     @Override
     protected void onPreExecute() {
@@ -29,10 +39,6 @@ public class UploadRouteAysncTask extends AsyncTask{
         pd.setMessage("Organizing data");
         pd.show();
 
-    }
-
-    public UploadRouteAysncTask(Context context){
-        this.context = context;
     }
 
     @Override
