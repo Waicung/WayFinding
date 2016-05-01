@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.waicung.wayfinding.models.AuthenNResponse;
@@ -37,6 +38,7 @@ import com.waicung.wayfinding.webclient.UploadLocationAsyncTask;
 import com.waicung.wayfinding.webclient.UploadRouteAysncTask;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.waicung.wayfinding.models.*;
@@ -58,21 +60,35 @@ public class MainActivity extends AppCompatActivity {
     private LayoutInflater layoutinflater;
     private CoordinatorLayout mainLayout;
     private Button show_button;
-    private int step;
+    private int step = 1;
     private TrackingService tService;
     private boolean mBound = false;
     private final String TAG = "MainActivity";
+    private ListView steps_listView;
 
     private BroadcastReceiver stepReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
-            step = intent.getIntExtra("step" , 0);
-            Log.i(TAG, "Got message: " + step);
+            step = intent.getIntExtra("step" , 0)+1;
+            int success = intent.getIntExtra("success" , 0);
+            Log.i(TAG, "Step change to: " + step);
+            switch (success){
+                case 0:
+                    String event = intent.getStringExtra("event");
+                    tService.setLog(step,event);
+                    break;
+                default:
+                    tService.setStep(step);
+                    break;
+
+            }
+            displayInstruction(steps_listView);
             //TODO pass to tracking service
-            tService.setStep(step);
+
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //Set ListView for direction steps display.
-        final ListView steps_listView = (ListView)findViewById(R.id.steps_listView);
+        steps_listView = (ListView)findViewById(R.id.steps_listView);
         if(checkUser()){
             autoLogin();
             this.status = checkStatus();
@@ -108,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 this.assignment_id = getAssignmentID();
                 show_button.setVisibility(View.VISIBLE);
                 LocalBroadcastManager.getInstance(this).registerReceiver(stepReceiver,
-                        new IntentFilter("newStep"));
+                        new IntentFilter("Achieve"));
             }
             else if (status == 1000){
                 this.route_id = getRoute_id();
@@ -176,10 +192,11 @@ public class MainActivity extends AppCompatActivity {
         int height = (int)Math.round(dm.heightPixels);
         layoutinflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup container = (ViewGroup) layoutinflater.inflate(R.layout.start_popup,null);
+        TextView start = (TextView)container.findViewById(R.id.start_button);
         startPopup = new PopupWindow(container, width, height, true);
         startPopup.showAtLocation(mainLayout, Gravity.NO_GRAVITY,0,0);
 
-        container.setOnTouchListener(new View.OnTouchListener() {
+        start.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 //TODO start location update service
@@ -324,8 +341,13 @@ public class MainActivity extends AppCompatActivity {
         try {
             route = (Route)new LoadRouteAsyncTask(this).execute(status).get();
             ArrayList<Step> steps = route.getSteps();
-            //ArrayAdapter adapter = new ArrayAdapter<>(MainActivity.this,R.layout.list_item,R.id.tv_step,instructions);
-            CustomAdapter adapter = new CustomAdapter(MainActivity.this,steps);
+            /*int hide = steps.size();
+            while(hide>step){
+                hide--;
+                steps.remove(hide);
+                Log.i(TAG, "delete" + hide);
+            }*/
+            CustomAdapter adapter = new CustomAdapter(MainActivity.this,steps, step);
             lv.setAdapter(adapter);
         } catch (InterruptedException e) {
             e.printStackTrace();

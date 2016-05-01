@@ -40,10 +40,6 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity
-            android:name=".BasicActivity"
-            android:label="@string/title_activity_basic"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

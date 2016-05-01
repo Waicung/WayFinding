@@ -1,7 +1,6 @@
 package com.waicung.wayfinding;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Binder;
@@ -20,12 +19,13 @@ import com.google.android.gms.location.LocationServices;
 
 public class TrackingService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
-    private Context context;
+
+
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private double mCurrentLatitude;
     private double mCurrentLongitude;
-    private DBOpenHelper DB;
+    private DBOpenHelper db;
     private long interval = 10 * 1000;   // 10 seconds, in milliseconds
     private long fastestInterval = 1 * 1000;  // 1 second, in milliseconds
     private float minDisplacement;
@@ -53,7 +53,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onCreate() {
         super.onCreate();
-        DB = new DBOpenHelper(getApplicationContext());
+        db = new DBOpenHelper(getApplicationContext());
         //when the service is created
         interval = 10 * 1000;   // 10 seconds, in milliseconds
         fastestInterval = 1 * 1000;  // 1 second, in milliseconds
@@ -73,6 +73,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         mGoogleApiClient.connect();
         Log.i(TAG, "starting connection");
         return super.onStartCommand(intent, flags, startId);
@@ -82,10 +83,19 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public IBinder onBind(Intent intent) {
+        if (db.getData()!=null){
+            db.newTable();
+        }
         mGoogleApiClient.connect();
         Log.i(TAG, "starting connection");
         // TODO: Return the communication channel to the service.
         return mBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        stopSelf();
+        return super.onUnbind(intent);
     }
 
     public GoogleApiClient createGoogleApiClient(){
@@ -114,21 +124,24 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                         Log.i(TAG," " + locationAvailability);
                     }
                 },null);
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
     }
 
 
     @Override
     public void onConnected(Bundle bundle) {
         startLocationUpdates();
+        setStep(1);
     }
 
-    private void handleNewLocation(Location location) {
+    private void handleNewLocation(Location location,String event) {
         if (location != null) {
-            Log.i(TAG, "get a location update");
+            Log.i(TAG, "get a location update for step: " + currentStep);
             mCurrentLatitude = location.getLatitude();
             mCurrentLongitude = location.getLongitude();
             currentTime = System.currentTimeMillis() / 1000;
-            DB.insertLocation(mCurrentLatitude, mCurrentLongitude, currentTime, currentStep);
+            db.insertLocation(mCurrentLatitude, mCurrentLongitude, currentTime, currentStep, event);
         }
         else {
             Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
@@ -152,15 +165,34 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onLocationChanged(Location location) {
-        handleNewLocation(location);
+        handleNewLocation(location,"");
     }
 
     public void setStep(int step){
-        this.currentStep =  step;
-        Log.i(TAG, "step set as " + currentStep);
+        Log.i(TAG, "setStep:" + currentStep);
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        handleNewLocation(location);
+        handleNewLocation(location, "");
+        this.currentStep =  step;
     }
 
+    public void setLog(int step, String event){
+        Log.i(TAG, "setLog: "  + currentStep + " ," + event);
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        handleNewLocation(location, event);
+        this.currentStep = step;
 
+    }
+
+    public void setFeedback(String event){
+        Log.i(TAG, "feedback for step: " + this.currentStep);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        mGoogleApiClient.disconnect();
+        stopSelf();
+        super.onDestroy();
+        Log.i(TAG,"Tracking Service is destroyed");
+    }
 }

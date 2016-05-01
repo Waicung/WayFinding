@@ -1,41 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_relativeLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_vertical">
 
-
+    <RelativeLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/direction_content">
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="100dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
+        android:text="Large Text Large Text Large Text Large Text Large Text Large Text Large Text Large Text Large Text Large Text"
         android:id="@+id/tv_step"
         android:gravity="center_vertical"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/imageView"
-        android:layout_toStartOf="@+id/imageView" />
+        android:paddingBottom="5dp" />
+        </RelativeLayout>
+
+<RelativeLayout
+    android:id="@+id/control_panel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/direction_content">
+
 
     <ImageView
-        android:layout_width="60dp"
+        android:layout_width="100dp"
         android:layout_height="30dp"
-        android:id="@+id/imageView"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:id="@+id/feedback_iv"
+        android:src="@drawable/ic_info"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/accent_material_dark" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:id="@+id/cross_iv"
+        android:src="@drawable/ic_cross"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"
+        android:background="@color/accent_material_dark"
+        android:layout_alignTop="@+id/textView"
+        android:layout_toRightOf="@+id/textView"
+        android:layout_toEndOf="@+id/textView" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:id="@+id/mark_iv"
         android:src="@drawable/ic_ncheck"
         android:paddingRight="15dp"
-        android:paddingLeft="15dp"/>
+        android:paddingLeft="15dp"
+        android:background="@color/accent_material_dark"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2" />
 
-    <!--<ImageButton-->
-        <!--android:layout_width="63dp"-->
-        <!--android:layout_height="63dp"-->
-        <!--android:id="@+id/icon_button"-->
-        <!--android:layout_alignBottom="@+id/tv_step"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:src="@drawable/ic_nmark"-->
-        <!--android:background="#00ffffff"-->
-        <!--android:layout_alignTop="@+id/tv_step" />-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="|"
+        android:id="@+id/textView"
+        android:layout_alignTop="@+id/feedback_iv"
+        android:layout_toRightOf="@+id/feedback_iv"
+        android:layout_toEndOf="@+id/feedback_iv" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="|"
+        android:id="@+id/textView2"
+        android:layout_alignTop="@+id/cross_iv"
+        android:layout_toRightOf="@+id/cross_iv"
+        android:layout_toEndOf="@+id/cross_iv" />
+    </RelativeLayout>
+
+
 </RelativeLayout>

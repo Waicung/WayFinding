@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.waicung.wayfinding.config.ConfigHandler;
@@ -32,6 +33,7 @@ public class LoadRouteAsyncTask extends AsyncTask{
     ArrayList<Step> stepsList = new ArrayList<>();
     ProgressDialog pd;
     Context context;
+    String TAG = "LoadRouteAsynck";
 
     LoadRouteAsyncTask(Context context){
         this.context = context;
@@ -121,7 +123,7 @@ public class LoadRouteAsyncTask extends AsyncTask{
                 }
 
             }
-            System.out.println("distance & duration: " + distance + ", " + duration );
+            Log.i(TAG,"distance & duration: " + distance + ", " + duration );
             for(String n: route_point){
                 JSONObject property = sub_legs.getJSONObject(n);
                 Double lng = property.getDouble("lng");
@@ -137,7 +139,7 @@ public class LoadRouteAsyncTask extends AsyncTask{
                         break;
                 }
             }
-            System.out.println("end: " + end_location.toString() + ", " + "start: " + start_location.toString());
+            Log.i(TAG, "end: " + end_location.toString() + ", " + "start: " + start_location.toString());
 
             JSONArray steps = sub_legs.getJSONArray("steps");
             Point start_point = null;
@@ -164,8 +166,8 @@ public class LoadRouteAsyncTask extends AsyncTask{
                     }
                 }
                 //last instruction contain 'destination information', which needs to be split
-                if(i==steps.length()-1){
-                    System.out.println("last instruction: " + html_instruction);
+                if(i==steps.length()-1&&html_instruction.indexOf("Destination")>0){
+                    Log.i(TAG,"last instruction: " + html_instruction);
                     int destination = html_instruction.indexOf("Destination");
                     String sub1 = html_instruction.substring(0,destination);
                     String sub2 = html_instruction.substring(destination,html_instruction.length());
@@ -179,10 +181,10 @@ public class LoadRouteAsyncTask extends AsyncTask{
                 }
 
             }
-            System.out.print("Google direction output: " + stepsList);
+            Log.i(TAG,"Google direction output: " + stepsList);
         }
         catch(JSONException e){
-            System.out.println("JSON Exception: " + e.getMessage());
+            Log.i(TAG,"JSON Exception: " + e.getMessage());
         }
         route = new Route(start_location,end_location,duration,distance,stepsList);
         return route;
