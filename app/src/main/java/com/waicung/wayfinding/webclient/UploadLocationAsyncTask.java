@@ -37,9 +37,9 @@ public class UploadLocationAsyncTask extends AsyncTask {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        /*pd = new ProgressDialog(context);
+        pd = new ProgressDialog(context);
         pd.setMessage("Uploading results");
-        pd.show();*/
+        pd.show();
 
     }
 

@@ -49,4 +49,10 @@ public class UserInfoActivity extends AppCompatActivity {
         editor.commit();
 
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
 }

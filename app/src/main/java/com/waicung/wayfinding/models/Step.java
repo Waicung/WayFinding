@@ -4,6 +4,7 @@ package com.waicung.wayfinding.models;
  * Created by waicung on 14/04/2016.
  */
 public class Step {
+    private int step_number;
     private Point start_point;
     private Point end_point;
     private String instruction;
@@ -60,6 +61,10 @@ public class Step {
 
     public String getInstruction(){
         return this.instruction;
+    }
+
+    public int getStepNumber(){
+        return this.step_number;
     }
 
 

@@ -24,7 +24,7 @@ import com.waicung.wayfinding.models.*;
 public class CustomAdapter extends ArrayAdapter {
     private Context context;
     private ArrayList<Step> steps;
-    private int step_number;
+    private int currentStep;
     String TAG = "cAdapter";
 
 
@@ -32,7 +32,7 @@ public class CustomAdapter extends ArrayAdapter {
         super(context, R.layout.list_item, steps);
         this.context = context;
         this.steps = steps;
-        this.step_number = step_number;
+        this.currentStep = step_number;
     }
 
     private static class ViewHolder{
@@ -46,7 +46,10 @@ public class CustomAdapter extends ArrayAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+        //Log.i(TAG,Integer.valueOf(getCount()).toString());
         Step step = (Step) getItem(position);
+        int step_number = step.getStepNumber();
+        Log.i(TAG, Integer.valueOf(step.getStepNumber()).toString());
         final ViewHolder viewHolder;
         final View result;
 
@@ -59,26 +62,27 @@ public class CustomAdapter extends ArrayAdapter {
             viewHolder.markView = (ImageView)convertView.findViewById(R.id.mark_iv);
             viewHolder.crossView = (ImageView) convertView.findViewById(R.id.cross_iv);
             viewHolder.feedbackView = (ImageView) convertView.findViewById(R.id.feedback_iv);
-            if(position==step_number-1){
-                Log.i(TAG, "position show: " + position);
-                viewHolder.panel.setVisibility(View.VISIBLE);
-            }
-            else{
-                if(position>step_number-1){
-                    Log.i(TAG, "Hide all: " + position);
-                    viewHolder.wholeItem.setVisibility(View.GONE);
-                }
-                Log.i(TAG, "position hide: " + position);
-                viewHolder.panel.setVisibility(View.GONE);
-            }
             result = convertView;
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
             result = convertView;
-
         }
-
+        if(step_number==this.currentStep){
+            Log.i(TAG, "position show: " + step_number + currentStep);
+            viewHolder.wholeItem.setVisibility(View.VISIBLE);
+            viewHolder.panel.setVisibility(View.VISIBLE);
+        }
+        else {
+            if (step_number > currentStep) {
+                Log.i(TAG, "Hide all: " + position);
+                viewHolder.wholeItem.setVisibility(View.GONE);
+            }
+            else {
+                Log.i(TAG, "position hide: " + position);
+                viewHolder.panel.setVisibility(View.GONE);
+            }
+        }
 
         viewHolder.instructionView.setText(step.getInstruction());
 
@@ -113,6 +117,11 @@ public class CustomAdapter extends ArrayAdapter {
             public void onClick(View v) {
                 Snackbar.make(v, "Provide feedback for instruction " + (position+1), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
+                Intent unreachable = new Intent("Achieve");
+                unreachable.putExtra("step", position+1);
+                unreachable.putExtra("success", 2);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(unreachable);
+
             }
         });
         return convertView;

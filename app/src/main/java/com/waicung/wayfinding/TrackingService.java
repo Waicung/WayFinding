@@ -1,11 +1,14 @@
 package com.waicung.wayfinding;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -50,6 +53,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     public TrackingService() {
 
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -83,7 +87,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public IBinder onBind(Intent intent) {
-        if (db.getData()!=null){
+        if (db.getData() != null) {
             db.newTable();
         }
         mGoogleApiClient.connect();
@@ -98,8 +102,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         return super.onUnbind(intent);
     }
 
-    public GoogleApiClient createGoogleApiClient(){
-        GoogleApiClient googleApiClient  = new GoogleApiClient.Builder(this)
+    public GoogleApiClient createGoogleApiClient() {
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -116,14 +120,24 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         return locationRequest;
     }
 
-    protected void startLocationUpdates(){
+    protected void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, new LocationCallback() {
                     @Override
                     public void onLocationAvailability(LocationAvailability locationAvailability) {
-                        Log.i(TAG," " + locationAvailability);
+                        Log.i(TAG, " " + locationAvailability);
                     }
-                },null);
+                }, null);
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
     }
@@ -169,14 +183,14 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     }
 
     public void setStep(int step){
-        Log.i(TAG, "setStep:" + currentStep);
+        Log.i(TAG, "setStep:" + step);
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         handleNewLocation(location, "");
         this.currentStep =  step;
     }
 
     public void setLog(int step, String event){
-        Log.i(TAG, "setLog: "  + currentStep + " ," + event);
+        Log.i(TAG, "setLog: "  + step + " ," + event);
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         handleNewLocation(location, event);
         this.currentStep = step;

@@ -156,10 +156,10 @@ public class LoadRouteAsyncTask extends AsyncTask{
                     Double lat = property.getDouble("lat");
                     switch (n){
                         case "end_location":
-                            end_point = new Point(lng,lat);
+                            end_point = new Point(lat,lng);
                             break;
                         case "start_location":
-                            start_point= new Point(lng, lat);
+                            start_point= new Point(lat, lng);
                             break;
                         default:
                             break;

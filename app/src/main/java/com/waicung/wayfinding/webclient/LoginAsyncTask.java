@@ -64,31 +64,34 @@ public class LoginAsyncTask extends AsyncTask<String,Void,String>{
         String jsonString = HH.postRequest();
         //Convert the response to accordance object
         Gson gson = new Gson();
-        AuthenNResponse response = gson.fromJson(jsonString,AuthenNResponse.class);
-        String result;
-        //Check if the authentication is success
-        if(response!=null&&response.getSuccess()){
-            //store the response if it is a correct credential
-            SharedPreferences sharedPref = context.getSharedPreferences(
-                    context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.clear();
-            editor.commit();
-            editor.putString(context.getString(R.string.preference_authenN_response), jsonString);
-            editor.putString("username", username);
-            editor.putString("password", password);
-            editor.putInt("status", response.getStatus());
-            editor.commit();
-            result = context.getString(R.string.login_success);
-        }
-        else if (response==null){
-            result = context.getString(R.string.connection_error);
-        }
-        else{
-            result = context.getString(R.string.login_fail);
+        try {
+            AuthenNResponse response = gson.fromJson(jsonString, AuthenNResponse.class);
+            String result;
+            //Check if the authentication is success
+            if (response != null && response.getSuccess()) {
+                //store the response if it is a correct credential
+                SharedPreferences sharedPref = context.getSharedPreferences(
+                        context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.clear();
+                editor.commit();
+                editor.putString(context.getString(R.string.preference_authenN_response), jsonString);
+                editor.putString("username", username);
+                editor.putString("password", password);
+                editor.putInt("status", response.getStatus());
+                editor.commit();
+                result = context.getString(R.string.login_success);
+            } else if (response == null) {
+                result = context.getString(R.string.connection_error);
+            } else {
+                result = context.getString(R.string.login_fail);
+            }
+            return result;
+        }catch (Exception e){
+            Log.e(TAG, e.getMessage());
         }
         //do nothing
-        return result;
+        return context.getString(R.string.connection_error);
 
 
     }

@@ -38,6 +38,16 @@
             android:layout_centerHorizontal="true"
             android:visibility="gone"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="It is Done. Thank you so much!"
+            android:textSize="18dp"
+            android:id="@+id/thanks_textView"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"/>
+
     </RelativeLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

@@ -106,8 +106,8 @@ public class HttpRequestHandler {
         try{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             //set properties of the connection
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(1000);
+            conn.setReadTimeout(15000);
+            conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
@@ -127,6 +127,7 @@ public class HttpRequestHandler {
             }
         }
         catch (IOException e){
+            e.getStackTrace();
             Log.e(TAG, e.getMessage());
         }
         response = Str.toString();

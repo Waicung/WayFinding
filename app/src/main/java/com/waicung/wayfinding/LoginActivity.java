@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(result == getString(R.string.connection_error)){
 
                 }
+                finish();
 
             }
         });
@@ -73,8 +74,6 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                LoginActivity.this.startActivity(intent);
                 finish();
             }
         });

@@ -3,6 +3,7 @@ package com.waicung.wayfinding.webclient;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.waicung.wayfinding.R;
@@ -18,11 +19,11 @@ import java.net.URLEncoder;
  */
 public class UploadRouteAysncTask extends AsyncTask{
     Context context;
-    //private String testapi = "http://10.0.2.2:8080/wayfinding/receiveRoute.php";
-    private String api;// = "http://wayfinding.magicjane.org/receiveRoute.php";
+    private String api;
 
     String postData;
     ProgressDialog pd;
+    String TAG = "UPloadAsyncTask";
 
 
     public UploadRouteAysncTask(Context context){
@@ -52,10 +53,10 @@ public class UploadRouteAysncTask extends AsyncTask{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        System.out.println("Upload Data: " + gson.toJson(route));
+        System.out.println("Upload Data: " + gson.toJson(route) );
         HttpRequestHandler HH = new HttpRequestHandler("POST", api, postData);
         String output = HH.postRequest();
-        System.out.println("Response from uploading: " + output);
+        Log.i(TAG,"Response from uploading: " + output);
         return output;
     }
 
